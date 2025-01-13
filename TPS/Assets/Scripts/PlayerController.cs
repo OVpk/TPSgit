@@ -7,11 +7,13 @@ public class PlayerController : MonoBehaviour
     public float runningMoveSpeed;
     public float walkingMoveSpeed;
     public float crawlingMoveSpeed;
+    public float silentMoveSpeed;
     private float moveSpeed = 0;
 
     public float walkingRotationSpeed;
     public float crawlingRotationSpeed;
     public float runningRotationSpeed;
+    public float silentRotationSpeed;
     private float rotationSpeed = 0;
 
     [SerializeField]
@@ -50,7 +52,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private enum MoveState
+    public enum MoveState
     {
         Idle,
         Walking,
@@ -58,11 +60,11 @@ public class PlayerController : MonoBehaviour
         Running,
         Punching,
         Stun,
-        GettingUp
+        GettingUp,
+        WalkingSilently
     }
 
-    [SerializeField]
-    private MoveState currentMoveState = MoveState.Idle;
+    public MoveState currentMoveState = MoveState.Idle;
 
     void Update()
     {
@@ -92,18 +94,27 @@ public class PlayerController : MonoBehaviour
         {
             StartCoroutine(GetUp());
         }
-        else if (currentMoveState != MoveState.Crawling)
+        else if (currentMoveState != MoveState.Crawling && currentMoveState != MoveState.Punching)
         {
-
             if (horizontalInput != 0 || verticalInput != 0)
             {
-                currentMoveState = Input.GetKey(KeyCode.LeftShift) ? MoveState.Running : MoveState.Walking;
+                if (Input.GetKey(KeyCode.LeftShift))
+                {
+                    currentMoveState = MoveState.Running;
+                }
+                else if (Input.GetKey(KeyCode.P))
+                {
+                    currentMoveState = MoveState.WalkingSilently;
+                }
+                else
+                {
+                    currentMoveState = MoveState.Walking;
+                }
             }
             else
             {
                 currentMoveState = MoveState.Idle;
             }
-
         }
 
         if (currentMoveState != previousMoveState)
@@ -172,6 +183,13 @@ public class PlayerController : MonoBehaviour
                 ResetAllAnimationsExcept("isRunning");
                 StartCoroutine(DrinkedRun());
                 break;
+            
+            case MoveState.WalkingSilently:
+                moveSpeed = silentMoveSpeed;
+                rotationSpeed = silentRotationSpeed;
+                animatorComponent.SetBool("isWalkingSilently", true);
+                ResetAllAnimationsExcept("isWalkingSilently");
+                break;
 
             case MoveState.Idle:
                 moveSpeed = 0;
@@ -190,7 +208,7 @@ public class PlayerController : MonoBehaviour
 
     private void ResetAllAnimationsExcept(string animName)
     {
-        string[] animationNames = { "isCrawling", "isWalking", "isRunning" };
+        string[] animationNames = { "isCrawling", "isWalking", "isRunning", "isWalkingSilently" };
 
         foreach (string anim in animationNames)
         {
@@ -218,8 +236,7 @@ public class PlayerController : MonoBehaviour
         float random = Random.Range(0f, 1f);
         if (random > 0.5f)
         {
-            currentMoveState = MoveState.Stun;
-            playerRagdollController.EnableRagdoll(true);
+            StunPlayer();
             yield return new WaitForSeconds(3f);
             playerRagdollController.EnableRagdoll(false);
             StartCoroutine(GetUp());
@@ -228,6 +245,12 @@ public class PlayerController : MonoBehaviour
         {
             StartCoroutine(DrinkedRun());
         }
+    }
+
+    public void StunPlayer()
+    {
+        currentMoveState = MoveState.Stun;
+        playerRagdollController.EnableRagdoll(true);
     }
 
     public AnimationClip gettingUp;
