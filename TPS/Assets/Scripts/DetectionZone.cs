@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class DetectionZone : MonoBehaviour
 {
-
+    public PlayerController player;
     public float timeout = 2f;
     private float timeInBadState = 0f;
     private void OnTriggerStay(Collider other)
@@ -13,7 +13,6 @@ public class DetectionZone : MonoBehaviour
         if (other.tag == "Player")
         {
             
-            PlayerController player = other.GetComponent<PlayerController>();
             if (player.currentMoveState != PlayerController.MoveState.WalkingSilently &&
                 player.currentMoveState != PlayerController.MoveState.Idle &&
                 player.currentMoveState != PlayerController.MoveState.Punching)

@@ -69,4 +69,15 @@ public class EnemyMovement : MonoBehaviour
         currentWaypointIndex = (currentWaypointIndex + 1) % waypoints.Count; // Boucle sur la liste
         isWaiting = false;
     }
+
+    public GameObject earZone;
+    public GameObject visionZone;
+    
+    public void Dying()
+    {
+        GetComponent<RagdollController>().EnableRagdoll(true);
+        earZone.SetActive(false);
+        visionZone.SetActive(false);
+    }
+    
 }

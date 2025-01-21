@@ -9,8 +9,8 @@ public class PunchTriggerScript : MonoBehaviour
     {
         if (other.tag == "Enemy")
         {
+            other.GetComponent<EnemyMovement>().Dying();
             other.GetComponent<EnemyMovement>().enabled = false;
-            other.GetComponent<RagdollController>().EnableRagdoll(true);
         }
     }
 }
