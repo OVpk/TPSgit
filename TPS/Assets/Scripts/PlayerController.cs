@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class PlayerController : MonoBehaviour
 {
@@ -14,6 +16,7 @@ public class PlayerController : MonoBehaviour
     public float crawlingRotationSpeed;
     public float runningRotationSpeed;
     public float silentRotationSpeed;
+    public float punchRotationSpeed;
     private float rotationSpeed = 0;
 
     [SerializeField]
@@ -199,8 +202,7 @@ public class PlayerController : MonoBehaviour
             case MoveState.Punching:
                 moveSpeed = 0;
                 rotationSpeed = 0;
-                animatorComponent.SetTrigger("Punch");
-                ResetAllAnimationsExcept("");
+                
                 StartCoroutine(Punch());
                 break;
         }
@@ -224,6 +226,9 @@ public class PlayerController : MonoBehaviour
 
     private IEnumerator Punch()
     {
+        RotateTowards(lastCloseEnemy);
+        animatorComponent.SetTrigger("Punch");
+        ResetAllAnimationsExcept("");
         punchTrigger.SetActive(true);
         yield return new WaitForSeconds(punch.length);
         punchTrigger.SetActive(false);
@@ -287,5 +292,39 @@ public class PlayerController : MonoBehaviour
         Vector3 rayStart = transform.position + Vector3.up * (crouchedSize.y / 2);
         float requiredHeight = originalSize.y - crouchedSize.y;
         return !Physics.Raycast(rayStart, Vector3.up, requiredHeight);
+    }
+    
+    void RotateTowards(Vector3 targetPosition)
+    {
+        if (targetPosition != Vector3.zero)
+        {
+            // Calcul de la direction vers la cible
+            Vector3 direction = (targetPosition - transform.position).normalized;
+
+            // Si la direction n'est pas nulle, calcule la rotation
+            if (direction.magnitude > 0)
+            {
+                Quaternion lookRotation = Quaternion.LookRotation(direction);
+                transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, punchRotationSpeed * Time.deltaTime);
+            }
+        }
+        
+    }
+
+    private Vector3 lastCloseEnemy = Vector3.zero;
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "Enemy")
+        {
+            lastCloseEnemy = other.transform.position;
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.tag == "Enemy")
+        {
+            lastCloseEnemy = Vector3.zero;
+        }
     }
 }
