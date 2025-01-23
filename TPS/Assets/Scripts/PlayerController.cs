@@ -311,7 +311,7 @@ public class PlayerController : MonoBehaviour
         
     }
 
-    private Vector3 lastCloseEnemy = Vector3.zero;
+    public Vector3 lastCloseEnemy = Vector3.zero;
     private void OnTriggerEnter(Collider other)
     {
         if (other.tag == "Enemy")
