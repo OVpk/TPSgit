@@ -1,56 +1,78 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class EnemyMovement : MonoBehaviour
+public abstract class EnemyMovement : MonoBehaviour
 {
     public List<Transform> waypoints;
 
     private int currentWaypointIndex = 0;
-    private bool isWaiting = false;
-
-    void Update()
-    {
-        if (!isWaiting)
-        {
-            MoveToWaypoint();
-        }
-    }
 
     [SerializeField] private NavMeshAgent navMesh;
+    
 
-    void MoveToWaypoint()
+    private IEnumerator MoveToTarget(Transform target, EnemyController.EnemyState stateAfterTarget)
+    {
+        while (Vector3.Distance(transform.position, target.position) >= 1.5f)
+        {
+            navMesh.SetDestination(target.position);
+            yield return null;
+        }
+        
+        ChangeState(stateAfterTarget);
+    }
+
+    protected void MoveToWaypoint()
     {
         if (waypoints.Count == 0) return;
         
-        Transform targetWaypoint = waypoints[currentWaypointIndex];
-        Vector3 targetPosition = targetWaypoint.position;
-
-        navMesh.SetDestination(targetPosition);
+        StopAllCoroutines();
         
-        if (Vector3.Distance(transform.position, targetPosition) < 0.1f)
-        {
-            StartCoroutine(WaitAtWaypoint());
-        }
+        StartCoroutine(MoveToTarget(waypoints[currentWaypointIndex], EnemyController.EnemyState.Looking));
+    }
+    
+    protected void MoveToPlayer()
+    {
+        StopAllCoroutines();
+
+        navMesh.speed = 150;
+        
+        animator.SetTrigger("PlayerDetected");
+        
+        StartCoroutine(MoveToTarget(PlayerController.Instance.transform, EnemyController.EnemyState.Punching));
+    }
+
+    protected void LookingAround()
+    {
+        StopAllCoroutines();
+        
+        StartCoroutine(WaitAtWaypoint());
     }
 
     public AnimationClip look;
     public Animator animator;
-    
-    IEnumerator WaitAtWaypoint()
-    {
-        isWaiting = true;
 
+    private IEnumerator WaitAtWaypoint()
+    {
         animator.SetTrigger("Look");
         yield return new WaitForSeconds(look.length);
         
         currentWaypointIndex = (currentWaypointIndex + 1) % waypoints.Count;
-        isWaiting = false;
+        ChangeState(EnemyController.EnemyState.Patrolling);
+    }
+
+    protected void Punching()
+    {
+        animator.SetTrigger("Punch");
+        punchTrigger.SetActive(true);
     }
 
     public GameObject earZone;
     public GameObject visionZone;
+    
+    public GameObject punchTrigger;
     
     public void Dying()
     {
@@ -58,5 +80,7 @@ public class EnemyMovement : MonoBehaviour
         earZone.SetActive(false);
         visionZone.SetActive(false);
     }
-    
+
+    public abstract void ChangeState(EnemyController.EnemyState newState);
+
 }

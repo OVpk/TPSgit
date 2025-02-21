@@ -33,6 +33,16 @@ public class PlayerController : MonoBehaviour
     private Vector3 originalCenter;
     private Vector3 crouchedCenter;
 
+    public static PlayerController Instance;
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+    }
+
     void Start()
     {
         boxCollider = GetComponent<BoxCollider>();
@@ -286,6 +296,11 @@ public class PlayerController : MonoBehaviour
             boxCollider.center = originalCenter;
         }
     }
+    
+    public void Dying()
+    {
+        playerRagdollController.EnableRagdoll(true);
+    }
 
     private bool IsEnoughSpaceToStand()
     {
@@ -311,7 +326,8 @@ public class PlayerController : MonoBehaviour
         
     }
 
-    public Vector3 lastCloseEnemy = Vector3.zero;
+    public 
+        Vector3 lastCloseEnemy = Vector3.zero;
     private void OnTriggerEnter(Collider other)
     {
         if (other.tag == "Enemy")

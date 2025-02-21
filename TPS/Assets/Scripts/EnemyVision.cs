@@ -3,15 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyVision : MonoBehaviour
+public class EnemyVision : EnemyDetectionZone
 {
-    public PlayerController player;
     public LayerMask layerMask;
     public GameObject originObject;
     public GameObject targetObject;
 
+
     private void OnTriggerStay(Collider other)
     {
+        if (playerDetected) return;
+        
         if (other.CompareTag("PlayerHead"))
         {
             Vector3 direction = (targetObject.transform.position - originObject.transform.position).normalized;
@@ -25,7 +27,8 @@ public class EnemyVision : MonoBehaviour
             {
                 if (hit.collider.gameObject == targetObject)
                 {
-                    player.StunPlayer();
+                    playerDetected = true;
+                    ownEnemyController.ChangeState(EnemyController.EnemyState.Chasing);
                 }
             }
         }
