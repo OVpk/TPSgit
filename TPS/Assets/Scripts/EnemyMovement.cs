@@ -37,7 +37,7 @@ public abstract class EnemyMovement : MonoBehaviour
     {
         StopAllCoroutines();
 
-        navMesh.speed = 150;
+        navMesh.speed *= 8;
         
         animator.SetTrigger("PlayerDetected");
         
@@ -65,6 +65,14 @@ public abstract class EnemyMovement : MonoBehaviour
 
     protected void Punching()
     {
+        Vector3 targetPosition = PlayerController.Instance.transform.position;
+        Vector3 direction = (targetPosition - transform.position).normalized;
+        if (direction.magnitude > 0)
+        {
+            Quaternion lookRotation = Quaternion.LookRotation(direction);
+            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, 30 * Time.deltaTime);
+        }
+        PlayerController.Instance.enabled = false;
         animator.SetTrigger("Punch");
         punchTrigger.SetActive(true);
     }

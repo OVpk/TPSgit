@@ -16,8 +16,6 @@ public class PunchTriggerScript : MonoBehaviour
         if (other.tag == "Player" && tag == "Enemy")
         {
             PlayerController.Instance.Dying();
-            
-            PlayerController.Instance.enabled = false;
         }
     }
 }
