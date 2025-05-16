@@ -19,9 +19,6 @@ public class PlayerController : MonoBehaviour
     public float punchRotationSpeed;
     private float rotationSpeed = 0;
 
-    [SerializeField]
-    private Transform CameraReferenceTransform;
-
     private Rigidbody rbComponent;
     private Animator animatorComponent;
 
@@ -89,8 +86,7 @@ public class PlayerController : MonoBehaviour
         float horizontalInput = Input.GetAxis("Horizontal");
         float verticalInput = Input.GetAxis("Vertical");
 
-        Vector3 camForward = CameraReferenceTransform.forward;
-        Vector3 deplacement = verticalInput * camForward + horizontalInput * CameraReferenceTransform.right;
+        Vector3 deplacement = verticalInput * Camera.main.gameObject.transform.forward + horizontalInput * Camera.main.gameObject.transform.right;
         deplacement.y = 0;
 
         MoveState previousMoveState = currentMoveState;
@@ -137,7 +133,6 @@ public class PlayerController : MonoBehaviour
 
         Vector3 deplacementFinal = Vector3.ClampMagnitude(deplacement, 1) * moveSpeed;
         
-        // Détection de la pente
         deplacementFinal = AdjustMovementForSlope(deplacementFinal);
         
         rbComponent.velocity = new Vector3(deplacementFinal.x, rbComponent.velocity.y, deplacementFinal.z);
@@ -146,27 +141,24 @@ public class PlayerController : MonoBehaviour
         {
             rbComponent.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(deplacement), Time.deltaTime * rotationSpeed);
         }
+        
     }
-    
-    // Ajuste le déplacement pour les pentes
+
+
+
     private Vector3 AdjustMovementForSlope(Vector3 movement)
     {
-        // Raycast vers le bas
         if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 0.5f))
         {
             Vector3 slopeNormal = hit.normal;
 
-            // Calcul de la pente
             float slopeAngle = Vector3.Angle(Vector3.up, slopeNormal);
-            if (slopeAngle <= 45f) // Ajuster selon le maximum autorisé
+            if (slopeAngle <= 45f)
             {
-                // Projette le déplacement le long de la pente
                 Vector3 slopeDirection = Vector3.ProjectOnPlane(movement, slopeNormal);
                 return slopeDirection;
             }
         }
-
-        // Si aucune pente détectée, garder le mouvement d'origine
         return movement;
     }
 
