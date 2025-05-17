@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraManager : MonoBehaviour
@@ -19,8 +16,13 @@ public class CameraManager : MonoBehaviour
         }
     }
 
-    public void SwitchCameraTo()
+    public void SwitchCameraTo(CameraController newCamera)
     {
-        
+        if (Camera.main != null)
+        {
+            Camera.main.transform.parent.gameObject.SetActive(false);
+        }
+
+        newCamera.gameObject.SetActive(true);
     }
 }

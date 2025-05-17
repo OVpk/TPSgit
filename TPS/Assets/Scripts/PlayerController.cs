@@ -38,6 +38,10 @@ public class PlayerController : MonoBehaviour
         {
             Instance = this;
         }
+        else
+        {
+            Destroy(this);
+        }
     }
 
     void Start()
