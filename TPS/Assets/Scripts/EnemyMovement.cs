@@ -70,17 +70,20 @@ public abstract class EnemyMovement : MonoBehaviour
         if (direction.magnitude > 0)
         {
             Quaternion lookRotation = Quaternion.LookRotation(direction);
-            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, 30 * Time.deltaTime);
+            transform.rotation = lookRotation;
         }
         PlayerController.Instance.enabled = false;
         animator.SetTrigger("Punch");
-        punchTrigger.SetActive(true);
+        foreach (var punchTrigger in punchTriggers)
+        {
+            punchTrigger.SetActive(true);
+        }
     }
 
     public GameObject earZone;
     public GameObject visionZone;
     
-    public GameObject punchTrigger;
+    public GameObject[] punchTriggers;
     
     public void Dying()
     {

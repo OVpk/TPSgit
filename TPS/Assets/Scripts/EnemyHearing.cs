@@ -14,9 +14,7 @@ public class EnemyHearing : EnemyDetectionZone
         if (other.CompareTag("Player"))
         {
             
-            if (PlayerController.Instance.currentMoveState != PlayerController.MoveState.WalkingSilently &&
-                PlayerController.Instance.currentMoveState != PlayerController.MoveState.Idle &&
-                PlayerController.Instance.currentMoveState != PlayerController.MoveState.Punching)
+            if (PlayerController.Instance.currentMoveState == PlayerController.MoveState.Walking)
             {
                 
                 timeInBadState += Time.deltaTime;

@@ -6,7 +6,6 @@ using Random = UnityEngine.Random;
 
 public class PlayerController : MonoBehaviour
 {
-    public float runningMoveSpeed;
     public float walkingMoveSpeed;
     public float crawlingMoveSpeed;
     public float silentMoveSpeed;
@@ -14,7 +13,6 @@ public class PlayerController : MonoBehaviour
 
     public float walkingRotationSpeed;
     public float crawlingRotationSpeed;
-    public float runningRotationSpeed;
     public float silentRotationSpeed;
     public float punchRotationSpeed;
     private float rotationSpeed = 0;
@@ -71,7 +69,6 @@ public class PlayerController : MonoBehaviour
         Idle,
         Walking,
         Crawling,
-        Running,
         Punching,
         Stun,
         GettingUp,
@@ -111,11 +108,7 @@ public class PlayerController : MonoBehaviour
         {
             if (horizontalInput != 0 || verticalInput != 0)
             {
-                if (Input.GetKey(KeyCode.LeftShift))
-                {
-                    currentMoveState = MoveState.Running;
-                }
-                else if (Input.GetKey(KeyCode.P))
+                if (Input.GetKey(KeyCode.P))
                 {
                     currentMoveState = MoveState.WalkingSilently;
                 }
@@ -184,14 +177,6 @@ public class PlayerController : MonoBehaviour
                 animatorComponent.SetBool("isWalking", true);
                 ResetAllAnimationsExcept("isWalking");
                 break;
-
-            case MoveState.Running:
-                moveSpeed = runningMoveSpeed;
-                rotationSpeed = runningRotationSpeed;
-                animatorComponent.SetBool("isRunning", true);
-                ResetAllAnimationsExcept("isRunning");
-                StartCoroutine(DrinkedRun());
-                break;
             
             case MoveState.WalkingSilently:
                 moveSpeed = silentMoveSpeed;
@@ -232,36 +217,12 @@ public class PlayerController : MonoBehaviour
 
     private IEnumerator Punch()
     {
-        RotateTowards(lastCloseEnemy);
         animatorComponent.SetTrigger("Punch");
         ResetAllAnimationsExcept("");
         punchTrigger.SetActive(true);
         yield return new WaitForSeconds(punch.length);
         punchTrigger.SetActive(false);
         currentMoveState = MoveState.Idle;
-    }
-    
-    private IEnumerator DrinkedRun()
-    {
-        yield return new WaitForSeconds(5f);
-        float random = Random.Range(0f, 1f);
-        if (random > 0.5f)
-        {
-            StunPlayer();
-            yield return new WaitForSeconds(3f);
-            playerRagdollController.EnableRagdoll(false);
-            StartCoroutine(GetUp());
-        }
-        else if (currentMoveState == MoveState.Running)
-        {
-            StartCoroutine(DrinkedRun());
-        }
-    }
-
-    public void StunPlayer()
-    {
-        currentMoveState = MoveState.Stun;
-        playerRagdollController.EnableRagdoll(true);
     }
 
     public AnimationClip gettingUp;
@@ -320,23 +281,5 @@ public class PlayerController : MonoBehaviour
             }
         }
         
-    }
-
-    public 
-        Vector3 lastCloseEnemy = Vector3.zero;
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.tag == "Enemy")
-        {
-            lastCloseEnemy = other.transform.position;
-        }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.tag == "Enemy")
-        {
-            lastCloseEnemy = Vector3.zero;
-        }
     }
 }
