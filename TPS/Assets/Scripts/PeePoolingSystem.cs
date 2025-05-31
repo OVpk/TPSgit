@@ -22,7 +22,7 @@ public class PeePoolingSystem : PoolingSystem
     [SerializeField] private float startDelay = 0f;
     [SerializeField] private float spawnInterval = 0.01f;
     
-    private void Start()
+    public void StartGenerator()
     {
         InvokeRepeating(nameof(SpawnProjectile), startDelay, spawnInterval);
     }
