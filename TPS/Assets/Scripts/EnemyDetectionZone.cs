@@ -5,12 +5,6 @@ using UnityEngine;
 
 public abstract class EnemyDetectionZone : MonoBehaviour
 {
-    protected EnemyController ownEnemyController;
-
+    public EnemyController enemyController;
     protected bool playerDetected = false;
-
-    private void Start()
-    {
-        ownEnemyController = transform.root.gameObject.GetComponent<EnemyController>();
-    }
 }

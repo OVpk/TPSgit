@@ -80,16 +80,29 @@ public abstract class EnemyMovement : MonoBehaviour
         }
     }
 
-    public GameObject earZone;
-    public GameObject visionZone;
+    public EnemyHearing earZone;
+    public EnemyVision visionZone;
     
     public GameObject[] punchTriggers;
-    
+
+    private void Awake()
+    {
+        if (earZone != null && visionZone != null)
+        {
+            earZone.enemyController = (EnemyController)this;
+            visionZone.enemyController = (EnemyController)this;
+        }
+        else
+        {
+            throw new Exception("ear or vision zone must be assigned");
+        }
+    }
+
     public void Dying()
     {
         GetComponent<RagdollController>().EnableRagdoll(true);
-        earZone.SetActive(false);
-        visionZone.SetActive(false);
+        earZone.gameObject.SetActive(false);
+        visionZone.gameObject.SetActive(false);
     }
 
     public abstract void ChangeState(EnemyController.EnemyState newState);

@@ -22,7 +22,7 @@ public class EnemyHearing : EnemyDetectionZone
                 if (timeInBadState >= timeout)
                 {
                     playerDetected = true;
-                    ownEnemyController.ChangeState(EnemyController.EnemyState.Chasing);
+                    enemyController.ChangeState(EnemyController.EnemyState.Chasing);
                 }
             }
             else

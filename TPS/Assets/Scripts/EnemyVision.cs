@@ -28,7 +28,7 @@ public class EnemyVision : EnemyDetectionZone
                 if (hit.collider.gameObject == targetObject)
                 {
                     playerDetected = true;
-                    ownEnemyController.ChangeState(EnemyController.EnemyState.Chasing);
+                    enemyController.ChangeState(EnemyController.EnemyState.Chasing);
                 }
             }
         }
