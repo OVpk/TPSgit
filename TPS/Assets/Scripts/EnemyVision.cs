@@ -12,7 +12,7 @@ public class EnemyVision : EnemyDetectionZone
 
     private void OnTriggerStay(Collider other)
     {
-        if (playerDetected) return;
+        if (enemyController.playerDetected) return;
         
         if (other.CompareTag("PlayerHead"))
         {
@@ -27,7 +27,7 @@ public class EnemyVision : EnemyDetectionZone
             {
                 if (hit.collider.gameObject == targetObject)
                 {
-                    playerDetected = true;
+                    enemyController.playerDetected = true;
                     enemyController.ChangeState(EnemyController.EnemyState.Chasing);
                 }
             }

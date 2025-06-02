@@ -14,14 +14,13 @@ public class PlayerController : MonoBehaviour
     public float walkingRotationSpeed;
     public float crawlingRotationSpeed;
     public float silentRotationSpeed;
-    public float punchRotationSpeed;
     private float rotationSpeed = 0;
 
     private Rigidbody rbComponent;
     private Animator animatorComponent;
 
     public RagdollController playerRagdollController;
-
+    
     private BoxCollider boxCollider;
     private Vector3 originalSize;
     private Vector3 crouchedSize;
@@ -44,6 +43,8 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
+        transform.position = GameManager.Instance.currentCheckPointPosition;
+        
         boxCollider = GetComponent<BoxCollider>();
         originalSize = boxCollider.size;
         originalCenter = boxCollider.center;
@@ -62,6 +63,8 @@ public class PlayerController : MonoBehaviour
         {
             Debug.LogWarning("No Animator detected on " + gameObject.name);
         }
+
+        OnDying += GameManager.Instance.EndGame;
     }
 
     public enum MoveState
@@ -130,8 +133,6 @@ public class PlayerController : MonoBehaviour
 
         Vector3 deplacementFinal = Vector3.ClampMagnitude(deplacement, 1) * moveSpeed;
         
-        deplacementFinal = AdjustMovementForSlope(deplacementFinal);
-        
         rbComponent.velocity = new Vector3(deplacementFinal.x, rbComponent.velocity.y, deplacementFinal.z);
 
         if (deplacement != Vector3.zero)
@@ -141,23 +142,6 @@ public class PlayerController : MonoBehaviour
         
     }
 
-
-
-    private Vector3 AdjustMovementForSlope(Vector3 movement)
-    {
-        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 0.5f))
-        {
-            Vector3 slopeNormal = hit.normal;
-
-            float slopeAngle = Vector3.Angle(Vector3.up, slopeNormal);
-            if (slopeAngle <= 45f)
-            {
-                Vector3 slopeDirection = Vector3.ProjectOnPlane(movement, slopeNormal);
-                return slopeDirection;
-            }
-        }
-        return movement;
-    }
 
     void HandleStateTransition()
     {
@@ -254,9 +238,14 @@ public class PlayerController : MonoBehaviour
         }
     }
     
+    public event Action OnDying;
+    
     public void Dying()
     {
+        OnDying?.Invoke();
+        
         playerRagdollController.EnableRagdoll(true);
+        this.enabled = false;
     }
 
     private bool IsEnoughSpaceToStand()
@@ -264,22 +253,5 @@ public class PlayerController : MonoBehaviour
         Vector3 rayStart = transform.position + Vector3.up * (crouchedSize.y / 2);
         float requiredHeight = originalSize.y - crouchedSize.y;
         return !Physics.Raycast(rayStart, Vector3.up, requiredHeight);
-    }
-    
-    void RotateTowards(Vector3 targetPosition)
-    {
-        if (targetPosition != Vector3.zero)
-        {
-            // Calcul de la direction vers la cible
-            Vector3 direction = (targetPosition - transform.position).normalized;
-
-            // Si la direction n'est pas nulle, calcule la rotation
-            if (direction.magnitude > 0)
-            {
-                Quaternion lookRotation = Quaternion.LookRotation(direction);
-                transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, punchRotationSpeed * Time.deltaTime);
-            }
-        }
-        
     }
 }

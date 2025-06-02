@@ -6,5 +6,4 @@ using UnityEngine;
 public abstract class EnemyDetectionZone : MonoBehaviour
 {
     public EnemyController enemyController;
-    protected bool playerDetected = false;
 }

@@ -69,18 +69,14 @@ public class ToiletMiniGame : MiniGame
     private void Update()
     {
         if (!isGameStarted) return;
-        
-        float verticalInput = 0f;
-        if (Input.GetKey(KeyCode.UpArrow)) verticalInput = 1f;
-        else if (Input.GetKey(KeyCode.DownArrow)) verticalInput = -1f;
+
+        float verticalInput = Input.GetAxis("Vertical");
         if (verticalInput != 0f)
         {
             MoveVertically(verticalInput);
         }
-        
-        float horizontalInput = 0f;
-        if (Input.GetKey(KeyCode.RightArrow)) horizontalInput = 1f;
-        else if (Input.GetKey(KeyCode.LeftArrow)) horizontalInput = -1f;
+
+        float horizontalInput = Input.GetAxis("Horizontal");
         if (horizontalInput != 0f)
         {
             RotateHorizontally(horizontalInput);

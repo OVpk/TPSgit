@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class EnemyController : EnemyMovement
 {
+    public bool playerDetected = false;
     
     public enum EnemyState
     {

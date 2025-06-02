@@ -98,11 +98,18 @@ public abstract class EnemyMovement : MonoBehaviour
         }
     }
 
+    public event Action OnDying;
+    
     public void Dying()
     {
+        OnDying?.Invoke();
+        
+        StopAllCoroutines();
         GetComponent<RagdollController>().EnableRagdoll(true);
         earZone.gameObject.SetActive(false);
         visionZone.gameObject.SetActive(false);
+        navMesh.enabled = false;
+        this.enabled = false;
     }
 
     public abstract void ChangeState(EnemyController.EnemyState newState);

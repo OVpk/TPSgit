@@ -10,7 +10,6 @@ public class PunchTriggerScript : MonoBehaviour
         if (other.tag == "Enemy" && tag == "Player")
         {
             other.GetComponent<EnemyMovement>().Dying();
-            other.GetComponent<EnemyMovement>().enabled = false;
         }
 
         if (other.tag == "Player" && tag == "Enemy")

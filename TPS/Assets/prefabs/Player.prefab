@@ -1785,7 +1785,11 @@ MonoBehaviour:
   silentRotationSpeed: 10
   punchRotationSpeed: 20
   playerRagdollController: {fileID: 6579560831856247000}
+  maxSlopeAngle: 45
   currentMoveState: 0
+  slopeLayer:
+    serializedVersion: 2
+    m_Bits: 1024
   punch: {fileID: 7400000, guid: 8e2cdac0f24ebf644bdd54167d69ee4c, type: 2}
   punchTrigger: {fileID: 7160651741845750932}
   gettingUp: {fileID: 7400000, guid: 89620be8c858c734d860ca5ffdbc1ecb, type: 2}

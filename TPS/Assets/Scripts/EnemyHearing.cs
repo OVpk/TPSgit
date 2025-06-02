@@ -9,7 +9,7 @@ public class EnemyHearing : EnemyDetectionZone
     private float timeInBadState = 0f;
     private void OnTriggerStay(Collider other)
     {
-        if (playerDetected) return;
+        if (enemyController.playerDetected) return;
         
         if (other.CompareTag("Player"))
         {
@@ -21,7 +21,7 @@ public class EnemyHearing : EnemyDetectionZone
                 
                 if (timeInBadState >= timeout)
                 {
-                    playerDetected = true;
+                    enemyController.playerDetected = true;
                     enemyController.ChangeState(EnemyController.EnemyState.Chasing);
                 }
             }
